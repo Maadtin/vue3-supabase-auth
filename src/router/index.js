@@ -40,6 +40,8 @@ router.beforeEach(async (to) => {
   const isLoggedIn = useIsLoggedIn();
   if (!isLoggedIn.value && to.meta.requiresAuth) {
     return { name: "login" };
+  } else if (isLoggedIn.value && !to.meta.requiresAuth) {
+    return { name: "dashboard" };
   }
 });
 
