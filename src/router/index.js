@@ -4,6 +4,11 @@ import { createRouter, createWebHistory } from "vue-router";
 /** @type {import("vue-router").RouteRecordRaw[]} */
 const routes = [
   {
+    path: "/",
+    name: "home",
+    redirect: { name: "login" },
+  },
+  {
     path: "/login",
     name: "login",
     component: () =>
