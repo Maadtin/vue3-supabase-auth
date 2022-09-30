@@ -1,30 +1,55 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
+  <nav v-on:suspend="test" class="text-center p-[30px]">
+    <template v-if="!isLoggedIn">
+      <router-link class="font-bold text-black" to="/register">
+        Register
+      </router-link>
+      |
+      <router-link class="font-bold text-black" to="/login">Login</router-link>
+    </template>
+    <button
+      v-else
+      class="bg-indigo-500 py-2 px-2 rounded-sm text-white"
+      @click="handleLogout()"
+    >
+      Logout
+    </button>
   </nav>
-  <router-view />
+  <div class="p-5">
+    <router-view />
+  </div>
 </template>
 
-<style lang="less">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script>
+import { useIsLoggedIn } from "./hooks";
+import { useRouter } from "vue-router";
+import { auth } from "./auth";
+import { supabase } from "./supabase";
 
-nav {
-  padding: 30px;
+export default {
+  setup() {
+    const router = useRouter();
+    const isLoggedIn = useIsLoggedIn();
 
-  a {
-    font-weight: bold;
-    color: #2c3e50;
+    supabase.auth.onAuthStateChange((_, session) => {
+      auth.user = session ? session.user : null;
+    });
 
-    &.router-link-exact-active {
-      color: #42b983;
+    async function handleLogout() {
+      await supabase.auth.signOut();
+      router.push({ name: "login" });
     }
-  }
+
+    return {
+      handleLogout,
+      isLoggedIn,
+    };
+  },
+};
+</script>
+
+<style lang="postcss" scoped>
+.router-link-exact-active {
+  @apply text-indigo-500;
 }
 </style>
