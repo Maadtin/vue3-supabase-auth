@@ -32,7 +32,15 @@ export default {
     const isLoggedIn = useIsLoggedIn();
 
     supabase.auth.onAuthStateChange((_, session) => {
-      auth.user = session ? session.user : null;
+      if (session) {
+        // if there's a session we will redirect to dashboard and set the user.
+        auth.user = session.user;
+        router.push({ name: "dashboard" });
+      } else {
+        // otherwise we will delete the user from store and redirect to the login page.
+        auth.user = null;
+        router.push({ name: "login" });
+      }
     });
 
     async function handleLogout() {
